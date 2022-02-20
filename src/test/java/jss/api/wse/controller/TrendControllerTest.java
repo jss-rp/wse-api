@@ -50,6 +50,21 @@ final class TrendControllerTest {
 
     @Test
     void itShouldNotCreate() {
+        // Body = null
+        webTestClient.post()
+                .uri("/trends")
+                .contentType(MediaType.APPLICATION_JSON)
+                .body(null)
+                .exchange()
+                .expectStatus().is4xxClientError();
+
+        webTestClient.post()
+                .uri("/trends")
+                .contentType(MediaType.APPLICATION_JSON)
+                .body(BodyInserters.fromValue("{ \"code\": null, name: \"Motorola\", \"createdAt\": null }"))
+                .exchange()
+                .expectStatus().is4xxClientError();
+
         final Trend trend = new Trend("MTO", "Motorola", LocalDateTime.now());
 
         Mockito.when(service.create(trend)).thenThrow(new RuntimeException());
@@ -57,8 +72,9 @@ final class TrendControllerTest {
         webTestClient.post()
                 .uri("/trends")
                 .contentType(MediaType.APPLICATION_JSON)
-                .body(BodyInserters.fromValue(trend))
+                .body(BodyInserters.fromValue("{ \"code\": null, name: \"Motorola\", \"createdAt\": null }"))
                 .exchange()
-                .expectStatus().is5xxServerError();
+                .expectStatus().is4xxClientError();
+
     }
 }
